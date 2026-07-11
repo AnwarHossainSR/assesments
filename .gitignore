@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+
+# local-only working files, not for GitHub
+.claude/
+docs/
