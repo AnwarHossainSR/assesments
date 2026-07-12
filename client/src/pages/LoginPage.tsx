@@ -1,6 +1,24 @@
-import { Link } from 'react-router-dom';
+import { useState, type FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { ApiError } from '../lib/api';
 
 export default function LoginPage() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    setError(null); setSubmitting(true);
+    try { await login(email, password); navigate('/feed'); }
+    catch (err) { setError(err instanceof ApiError ? err.message : 'Something went wrong'); }
+    finally { setSubmitting(false); }
+  }
+
   return (
     <section className="_social_login_wrapper _layout_main_wrapper">
       <div className="_shape_one"><img src="/assets/images/shape1.svg" alt="" className="_shape_img" /></div>
@@ -19,25 +37,26 @@ export default function LoginPage() {
                 <div className="_social_login_left_logo _mar_b28"><img src="/assets/images/logo.svg" alt="BuddyScript" className="_left_logo" /></div>
                 <p className="_social_login_content_para _mar_b8">Welcome back</p>
                 <h4 className="_social_login_content_title _titl4 _mar_b50">Login to your account</h4>
-                <form className="_social_login_form">
+                <form className="_social_login_form" onSubmit={onSubmit}>
+                  {error && <p role="alert" className="_mar_b14" style={{ color: '#d00' }}>{error}</p>}
                   <div className="row">
                     <div className="col-12">
                       <div className="_social_login_form_input _mar_b14">
                         <label htmlFor="email" className="_social_login_label _mar_b8">Email</label>
-                        <input id="email" type="email" className="form-control _social_login_input" />
+                        <input id="email" type="email" className="form-control _social_login_input" value={email} onChange={(e) => setEmail(e.target.value)} required />
                       </div>
                     </div>
                     <div className="col-12">
                       <div className="_social_login_form_input _mar_b14">
                         <label htmlFor="password" className="_social_login_label _mar_b8">Password</label>
-                        <input id="password" type="password" className="form-control _social_login_input" />
+                        <input id="password" type="password" className="form-control _social_login_input" value={password} onChange={(e) => setPassword(e.target.value)} required />
                       </div>
                     </div>
                   </div>
                   <div className="row">
                     <div className="col-12">
                       <div className="_social_login_form_btn _mar_t40 _mar_b60">
-                        <button type="button" className="_social_login_form_btn_link _btn1">Login now</button>
+                        <button type="submit" disabled={submitting} className="_social_login_form_btn_link _btn1">{submitting ? 'Logging in...' : 'Login now'}</button>
                       </div>
                     </div>
                   </div>
