@@ -39,3 +39,10 @@ export async function getFeed(params: { userId: string; cursor?: string; limit?:
     : new Set<string>();
   return { items: page.map((p) => toPostDTO(p, likedIds.has(p.id))), nextCursor: hasMore ? page[page.length - 1].id : null };
 }
+
+export async function deletePost(params: { postId: string; userId: string }): Promise<void> {
+  const post = await prisma.post.findUnique({ where: { id: params.postId } });
+  if (!post) throw new ApiError(404, 'Post not found');
+  if (post.authorId !== params.userId) throw new ApiError(403, 'Not your post');
+  await prisma.post.delete({ where: { id: params.postId } });
+}
