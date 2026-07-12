@@ -32,3 +32,29 @@ export async function createComment(input: { postId: string; authorId: string; t
   });
   return toCommentDTO(created, false);
 }
+
+const clampLimit = (n?: number) => (!n || n < 1 ? 10 : Math.min(n, 50));
+
+async function likedSet(userId: string, ids: string[]): Promise<Set<string>> {
+  if (!ids.length) return new Set();
+  const likes = await prisma.commentLike.findMany({ where: { userId, commentId: { in: ids } }, select: { commentId: true } });
+  return new Set(likes.map((l) => l.commentId));
+}
+
+async function page(where: Prisma.CommentWhereInput, userId: string, cursor?: string, limit?: number): Promise<Page<CommentDTO>> {
+  const take = clampLimit(limit);
+  const rows = await prisma.comment.findMany({
+    where, include: { author: true },
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+    take: take + 1, ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+  });
+  const hasMore = rows.length > take;
+  const slice = hasMore ? rows.slice(0, take) : rows;
+  const liked = await likedSet(userId, slice.map((c) => c.id));
+  return { items: slice.map((c) => toCommentDTO(c, liked.has(c.id))), nextCursor: hasMore ? slice[slice.length - 1].id : null };
+}
+
+export const listComments = (p: { postId: string; userId: string; cursor?: string; limit?: number }) =>
+  page({ postId: p.postId, parentId: null }, p.userId, p.cursor, p.limit);
+export const listReplies = (p: { commentId: string; userId: string; cursor?: string; limit?: number }) =>
+  page({ parentId: p.commentId }, p.userId, p.cursor, p.limit);
