@@ -49,7 +49,7 @@ export default function CreatePostBox() {
       <form onSubmit={onSubmit}>
         <div className="_feed_inner_text_area_box">
           <div className="_feed_inner_text_area_box_image">{user && <Avatar user={user} className="_txt_img" />}</div>
-          <div className="form-floating _feed_inner_text_area_box_form"><textarea className="form-control _textarea" placeholder="Write something ..." value={text} onChange={(event) => setText(event.target.value)} /></div>
+          <div className="_feed_inner_text_area_box_form"><textarea className="form-control _textarea" placeholder="Write something ..." aria-label="Write something" value={text} onChange={(event) => setText(event.target.value)} /></div>
         </div>
         {preview && <div className="_feed_post_preview _mar_t16"><img src={preview} alt="Selected post" /></div>}
         <div className="_feed_inner_text_area_bottom">

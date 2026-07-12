@@ -28,6 +28,7 @@ export default function LikeButton({ targetId, kind, likedByMe, likeCount }: { t
       const result = next ? await likesApi.like(kind, targetId) : await likesApi.unlike(kind, targetId);
       setLiked(result.liked);
       setCount(result.likeCount);
+      queryClient.invalidateQueries({ queryKey: ['likers', kind, targetId] });
       if (kind === 'post') queryClient.invalidateQueries({ queryKey: ['feed'] });
     } catch {
       setLiked(previousLiked);

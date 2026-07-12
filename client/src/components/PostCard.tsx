@@ -5,7 +5,7 @@ import { type PostDTO } from '../lib/api';
 import Avatar from './Avatar';
 import TimeAgo from './TimeAgo';
 import LikeButton from './LikeButton';
-import LikersModal from './LikersModal';
+import PostLikeSummary from './PostLikeSummary';
 import CommentSection from './comments/CommentSection';
 
 function ReactionIcon({ kind }: { kind: 'comment' | 'share' }) {
@@ -17,7 +17,6 @@ export default function PostCard({ post }: { post: PostDTO }) {
   const { user } = useAuth();
   const remove = useDeletePost();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showLikers, setShowLikers] = useState(false);
   const isAuthor = user?.id === post.author.id;
 
   return (
@@ -35,7 +34,7 @@ export default function PostCard({ post }: { post: PostDTO }) {
       </div>
 
       <div className="_feed_inner_timeline_total_reacts _padd_r24 _padd_l24 _mar_b26">
-        <button type="button" className="_feed_inner_timeline_total_reacts_image" onClick={() => setShowLikers(true)}><img src="/assets/images/react_img1.png" alt="" className="_react_img1" /><img src="/assets/images/react_img2.png" alt="" className="_react_img" /><img src="/assets/images/react_img3.png" alt="" className="_react_img _rect_img_mbl_none" /><p className="_feed_inner_timeline_total_reacts_para">{post.likeCount}+</p></button>
+        <PostLikeSummary postId={post.id} likeCount={post.likeCount} />
         <div className="_feed_inner_timeline_total_reacts_txt"><p className="_feed_inner_timeline_total_reacts_para1"><span>{post.commentCount}</span> Comment{post.commentCount === 1 ? '' : 's'}</p></div>
       </div>
 
@@ -46,7 +45,6 @@ export default function PostCard({ post }: { post: PostDTO }) {
       </div>
 
       <CommentSection postId={post.id} commentCount={post.commentCount} />
-      <LikersModal kind="post" targetId={post.id} open={showLikers} onClose={() => setShowLikers(false)} />
     </div>
   );
 }

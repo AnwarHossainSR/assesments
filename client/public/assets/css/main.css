@@ -6091,6 +6091,28 @@
     border: 0;
     background: transparent;
 }
+._header_notify_btn,
+button._mobile_navigation_bottom_link,
+button._header_mobile_search {
+    border: 0;
+    background: transparent;
+}
+._nav_profile_img,
+._nav_drop_img {
+    object-fit: cover;
+    border-radius: 50%;
+}
+._nav_dropdown_link {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    text-align: left;
+}
+._nav_drop_info {
+    display: flex;
+    align-items: center;
+}
 
 @media only screen and (max-width: 767px) {
     ._feed_inner_text_area_bottom_mobile ._feed_inner_text_area_bottom_photo_link {
