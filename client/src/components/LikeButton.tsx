@@ -41,9 +41,9 @@ export default function LikeButton({ targetId, kind, likedByMe, likeCount }: { t
     <>
       <div className={kind === 'post' ? '_feed_like_control' : '_comment_like_control'}>
         <button type="button" className={kind === 'post' ? `_feed_inner_timeline_reaction_emoji _feed_reaction${liked ? ' _feed_reaction_active' : ''}` : '_comment_reply_link'} onClick={toggle} aria-pressed={liked} disabled={busy}>{kind === 'post' && <LikeIcon />}<span>{liked ? 'Liked' : 'Like'}</span></button>
-        <button type="button" className={kind === 'post' ? '_feed_liker_count' : '_comment_like_count'} onClick={() => setShowLikers(true)}>{count > 0 ? count : ''}<span className="visually-hidden"> {count === 1 ? 'like' : 'likes'}; show people</span></button>
+        {kind === 'comment' && <button type="button" className="_comment_like_count" onClick={() => setShowLikers(true)}>{count > 0 ? count : ''}<span className="visually-hidden"> {count === 1 ? 'like' : 'likes'}; show people</span></button>}
       </div>
-      <LikersModal kind={kind} targetId={targetId} open={showLikers} onClose={() => setShowLikers(false)} />
+      {kind === 'comment' && <LikersModal kind={kind} targetId={targetId} open={showLikers} onClose={() => setShowLikers(false)} />}
     </>
   );
 }

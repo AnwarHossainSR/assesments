@@ -1980,7 +1980,10 @@
         flex-wrap: wrap;
 }
 ._comment_img {
-    max-width: 26px;
+    width: 26px;
+    height: 26px;
+    object-fit: cover;
+    border-radius: 50%;
 }
 ._feed_inner_comment_box_content {
     display: -webkit-box;
@@ -5899,8 +5902,9 @@
     cursor: pointer;
 }
 ._comment_img1 {
-    max-width: 40px;
-    object-fit: contain;
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
 }
 ._comment_area {
     margin: 0 0 0 20px;
@@ -6051,17 +6055,18 @@
 ._feed_like_control ._feed_reaction {
     width: 100%;
 }
+._feed_inner_timeline_total_reacts_image {
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
 ._feed_inner_timeline_reaction_emoji {
     gap: 8px;
     color: var(--color7);
 }
-._feed_liker_count {
-    position: absolute;
-    right: 10px;
-    border: 0;
-    background: transparent;
-    color: var(--color7);
-    font-size: 12px;
+._feed_inner_comment_box_content_image {
+    flex: 0 0 26px;
+    margin-right: 6px;
 }
 ._comment_like_control {
     display: flex;

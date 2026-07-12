@@ -21,11 +21,11 @@ export default function CommentItem({ comment }: { comment: CommentDTO }) {
           <div className="_comment_name"><h4 className="_comment_name_title">{comment.author.firstName} {comment.author.lastName}</h4></div>
           <div className="_comment_status"><p className="_comment_status_text"><span>{comment.text}</span></p></div>
           <div className="_comment_reply">
-            <ul className="_comment_reply_list">
+            <div className="_comment_reply_num"><ul className="_comment_reply_list">
               <li><LikeButton targetId={comment.id} kind="comment" likedByMe={comment.likedByMe} likeCount={comment.likeCount} /></li>
               {isTopLevel && <li><button type="button" className="_comment_reply_link" onClick={() => setShowReply((v) => !v)}>Reply</button></li>}
               <li><span className="_time_link"><TimeAgo iso={comment.createdAt} /></span></li>
-            </ul>
+            </ul></div>
           </div>
         </div>
         {showReply && isTopLevel && (

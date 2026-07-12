@@ -5,6 +5,7 @@ import { type PostDTO } from '../lib/api';
 import Avatar from './Avatar';
 import TimeAgo from './TimeAgo';
 import LikeButton from './LikeButton';
+import LikersModal from './LikersModal';
 import CommentSection from './comments/CommentSection';
 
 function ReactionIcon({ kind }: { kind: 'comment' | 'share' }) {
@@ -16,6 +17,7 @@ export default function PostCard({ post }: { post: PostDTO }) {
   const { user } = useAuth();
   const remove = useDeletePost();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showLikers, setShowLikers] = useState(false);
   const isAuthor = user?.id === post.author.id;
 
   return (
@@ -26,14 +28,14 @@ export default function PostCard({ post }: { post: PostDTO }) {
             <div className="_feed_inner_timeline_post_box_image"><Avatar user={post.author} className="_post_img" /></div>
             <div className="_feed_inner_timeline_post_box_txt"><h4 className="_feed_inner_timeline_post_box_title">{post.author.firstName} {post.author.lastName}</h4><p className="_feed_inner_timeline_post_box_para"><TimeAgo iso={post.createdAt} /> . <span>{post.visibility === 'PUBLIC' ? 'Public' : 'Private'}</span></p></div>
           </div>
-          {isAuthor && <div className="_feed_inner_timeline_post_box_dropdown"><button type="button" className="_feed_timeline_post_dropdown_link" aria-label="Post options" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>•••</button>{menuOpen && <div className="_feed_timeline_dropdown show"><button type="button" className="_feed_timeline_dropdown_link" disabled={remove.isPending} onClick={() => remove.mutate(post.id)}>Delete</button></div>}</div>}
+          {isAuthor && <div className="_feed_inner_timeline_post_box_dropdown"><button type="button" className="_feed_timeline_post_dropdown_link" aria-label="Post options" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}><svg xmlns="http://www.w3.org/2000/svg" width="4" height="17" fill="none" viewBox="0 0 4 17"><circle cx="2" cy="2" r="2" fill="#C4C4C4" /><circle cx="2" cy="8" r="2" fill="#C4C4C4" /><circle cx="2" cy="15" r="2" fill="#C4C4C4" /></svg></button>{menuOpen && <div className="_feed_timeline_dropdown show"><button type="button" className="_feed_timeline_dropdown_link" disabled={remove.isPending} onClick={() => remove.mutate(post.id)}>Delete</button></div>}</div>}
         </div>
         {post.text && <h4 className="_feed_inner_timeline_post_title">{post.text}</h4>}
         {post.imageUrl && <div className="_feed_inner_timeline_image"><img src={post.imageUrl} alt="Post attachment" className="_time_img" /></div>}
       </div>
 
       <div className="_feed_inner_timeline_total_reacts _padd_r24 _padd_l24 _mar_b26">
-        <div className="_feed_inner_timeline_total_reacts_image"><div className="_feed_inner_timeline_total_reacts_image_group"><img src="/assets/images/react_img1.png" alt="" className="_react_img1" /><img src="/assets/images/react_img2.png" alt="" className="_react_img" /><img src="/assets/images/react_img3.png" alt="" className="_react_img" /></div><p className="_feed_inner_timline_para">{post.likeCount} Likes</p></div>
+        <button type="button" className="_feed_inner_timeline_total_reacts_image" onClick={() => setShowLikers(true)}><img src="/assets/images/react_img1.png" alt="" className="_react_img1" /><img src="/assets/images/react_img2.png" alt="" className="_react_img" /><img src="/assets/images/react_img3.png" alt="" className="_react_img _rect_img_mbl_none" /><p className="_feed_inner_timeline_total_reacts_para">{post.likeCount}+</p></button>
         <div className="_feed_inner_timeline_total_reacts_txt"><p className="_feed_inner_timeline_total_reacts_para1"><span>{post.commentCount}</span> Comment{post.commentCount === 1 ? '' : 's'}</p></div>
       </div>
 
@@ -44,6 +46,7 @@ export default function PostCard({ post }: { post: PostDTO }) {
       </div>
 
       <CommentSection postId={post.id} commentCount={post.commentCount} />
+      <LikersModal kind="post" targetId={post.id} open={showLikers} onClose={() => setShowLikers(false)} />
     </div>
   );
 }
