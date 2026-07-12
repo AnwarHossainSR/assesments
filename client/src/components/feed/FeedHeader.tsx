@@ -32,6 +32,10 @@ function ChatIcon() {
 }
 
 export default function FeedHeader() {
+  const { user, logout } = useAuth();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const name = user ? `${user.firstName} ${user.lastName}` : '';
+
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-light _header_nav _padd_t10">
@@ -53,8 +57,9 @@ export default function FeedHeader() {
               <li className="nav-item _header_nav_item"><a className="nav-link _header_nav_link" href="#chat" aria-label="Messages"><ChatIcon /><span className="_counting">2</span></a></li>
             </ul>
             <div className="_header_nav_profile">
-              <div className="_header_nav_profile_image"><img src="/assets/images/profile.png" alt="Dylan Field" className="_nav_profile_img" /></div>
-              <div className="_header_nav_dropdown"><p className="_header_nav_para">Dylan Field</p><button className="_header_nav_dropdown_btn" type="button" aria-label="Profile menu"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="6" fill="none" viewBox="0 0 10 6"><path fill="#112032" d="m5 5 4-4-.7-.7L5 3.6 1.7.3 1 1l4 4Z" /></svg></button></div>
+              <div className="_header_nav_profile_image">{user && <Avatar user={user} className="_nav_profile_img" />}</div>
+              <div className="_header_nav_dropdown"><p className="_header_nav_para">{name}</p><button className="_header_nav_dropdown_btn" type="button" aria-label="Profile menu" aria-expanded={profileOpen} onClick={() => setProfileOpen((open) => !open)}><svg xmlns="http://www.w3.org/2000/svg" width="10" height="6" fill="none" viewBox="0 0 10 6"><path fill="#112032" d="m5 5 4-4-.7-.7L5 3.6 1.7.3 1 1l4 4Z" /></svg></button></div>
+              {profileOpen && <div className="_nav_profile_dropdown _profile_dropdown"><button type="button" className="_nav_dropdown_link" onClick={() => logout()}>Log Out</button></div>}
             </div>
           </div>
         </div>
@@ -86,3 +91,6 @@ export default function FeedHeader() {
     </>
   );
 }
+import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import Avatar from '../Avatar';
