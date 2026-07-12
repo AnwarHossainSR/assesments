@@ -9,7 +9,7 @@ export default function LikersModal({ kind, targetId, open, onClose }: { kind: L
   return (
     <Modal open={open} onClose={onClose} title="Liked by">
       {isLoading ? <Spinner /> : (
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+        <ul className="_likers_list">
           {(data?.items ?? []).map((u) => (
             <li key={u.id} className="d-flex align-items-center gap-2 _mar_b8"><Avatar user={u} className="_comment_img" /><span>{u.firstName} {u.lastName}</span></li>
           ))}
