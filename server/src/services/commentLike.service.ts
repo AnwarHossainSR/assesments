@@ -1,6 +1,8 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import { ApiError } from '../lib/errors.js';
+import { toPublicUser } from './auth.service.js';
+import type { Page, PublicUser } from '../types.js';
 
 export async function likeComment(params: { commentId: string; userId: string }): Promise<{ liked: true; likeCount: number }> {
   const comment = await prisma.comment.findUnique({ where: { id: params.commentId }, select: { id: true } });
@@ -24,4 +26,16 @@ export async function unlikeComment(params: { commentId: string; userId: string 
     return (await tx.comment.update({ where: { id: params.commentId }, data: { likeCount: { decrement: 1 } }, select: { likeCount: true } })).likeCount;
   });
   return { liked: false, likeCount };
+}
+
+export async function listCommentLikers(params: { commentId: string; cursor?: string; limit?: number }): Promise<Page<PublicUser>> {
+  const take = Math.min(params.limit && params.limit > 0 ? params.limit : 20, 50);
+  const likes = await prisma.commentLike.findMany({
+    where: { commentId: params.commentId }, include: { user: true },
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+    take: take + 1, ...(params.cursor ? { cursor: { id: params.cursor }, skip: 1 } : {}),
+  });
+  const hasMore = likes.length > take;
+  const p = hasMore ? likes.slice(0, take) : likes;
+  return { items: p.map((l) => toPublicUser(l.user)), nextCursor: hasMore ? p[p.length - 1].id : null };
 }
