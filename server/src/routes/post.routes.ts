@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { uploadImage } from '../lib/storage.js';
 import { createPost, getFeed, deletePost } from '../services/post.service.js';
+import { likePost, unlikePost, listPostLikers } from '../services/postLike.service.js';
 
 export const postRoutes = Router();
 
@@ -34,4 +35,17 @@ postRoutes.get('/', requireAuth, async (req, res, next) => {
 postRoutes.delete('/:id', requireAuth, async (req, res, next) => {
   try { await deletePost({ postId: req.params.id as string, userId: req.userId }); res.status(204).end(); }
   catch (err) { next(err); }
+});
+
+postRoutes.post('/:id/like', requireAuth, async (req, res, next) => {
+  try { res.json(await likePost({ postId: req.params.id as string, userId: req.userId })); } catch (err) { next(err); }
+});
+postRoutes.delete('/:id/like', requireAuth, async (req, res, next) => {
+  try { res.json(await unlikePost({ postId: req.params.id as string, userId: req.userId })); } catch (err) { next(err); }
+});
+postRoutes.get('/:id/likes', requireAuth, async (req, res, next) => {
+  try {
+    const { cursor, limit } = z.object({ cursor: z.string().optional(), limit: z.coerce.number().optional() }).parse(req.query);
+    res.json(await listPostLikers({ postId: req.params.id as string, cursor, limit }));
+  } catch (err) { next(err); }
 });
