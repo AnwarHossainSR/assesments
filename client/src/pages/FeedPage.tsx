@@ -1,4 +1,5 @@
 import CreatePostBox from '../components/CreatePostBox';
+import PostList from '../components/PostList';
 import { useAuth } from '../context/AuthContext';
 
 export default function FeedPage() {
@@ -18,7 +19,7 @@ export default function FeedPage() {
         <div className="row justify-content-center">
           <div className="col-xl-8 col-lg-10 col-md-12">
             <CreatePostBox />
-            {/* <PostList /> added in Task 54 */}
+            <PostList />
           </div>
         </div>
       </div>
