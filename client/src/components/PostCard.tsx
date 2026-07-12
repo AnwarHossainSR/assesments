@@ -26,21 +26,21 @@ export default function PostCard({ post }: { post: PostDTO }) {
             <div className="_feed_inner_timeline_post_box_image"><Avatar user={post.author} className="_post_img" /></div>
             <div className="_feed_inner_timeline_post_box_txt"><h4 className="_feed_inner_timeline_post_box_title">{post.author.firstName} {post.author.lastName}</h4><p className="_feed_inner_timeline_post_box_para"><TimeAgo iso={post.createdAt} /> . <span>{post.visibility === 'PUBLIC' ? 'Public' : 'Private'}</span></p></div>
           </div>
-          {isAuthor && <div className="_feed_inner_timeline_post_box_dropdown"><button type="button" className="_feed_timeline_post_dropdown_link" aria-label="Post options" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>•••</button>{menuOpen && <div className="_feed_timeline_post_dropdown"><button type="button" className="_feed_timeline_post_dropdown_item" disabled={remove.isPending} onClick={() => remove.mutate(post.id)}>Delete</button></div>}</div>}
+          {isAuthor && <div className="_feed_inner_timeline_post_box_dropdown"><button type="button" className="_feed_timeline_post_dropdown_link" aria-label="Post options" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>•••</button>{menuOpen && <div className="_feed_timeline_dropdown show"><button type="button" className="_feed_timeline_dropdown_link" disabled={remove.isPending} onClick={() => remove.mutate(post.id)}>Delete</button></div>}</div>}
         </div>
         {post.text && <h4 className="_feed_inner_timeline_post_title">{post.text}</h4>}
         {post.imageUrl && <div className="_feed_inner_timeline_image"><img src={post.imageUrl} alt="Post attachment" className="_time_img" /></div>}
       </div>
 
       <div className="_feed_inner_timeline_total_reacts _padd_r24 _padd_l24 _mar_b26">
-        <div className="_feed_inner_timeline_total_reacts_image"><div className="_feed_inner_timeline_total_reacts_image_group"><img src="/assets/images/react_img1.png" alt="" className="_reaction_img" /><img src="/assets/images/react_img2.png" alt="" className="_reaction_img" /><img src="/assets/images/react_img3.png" alt="" className="_reaction_img" /></div><p className="_feed_inner_timeline_total_reacts_para">{post.likeCount} Likes</p></div>
+        <div className="_feed_inner_timeline_total_reacts_image"><div className="_feed_inner_timeline_total_reacts_image_group"><img src="/assets/images/react_img1.png" alt="" className="_react_img1" /><img src="/assets/images/react_img2.png" alt="" className="_react_img" /><img src="/assets/images/react_img3.png" alt="" className="_react_img" /></div><p className="_feed_inner_timline_para">{post.likeCount} Likes</p></div>
         <div className="_feed_inner_timeline_total_reacts_txt"><p className="_feed_inner_timeline_total_reacts_para1"><span>{post.commentCount}</span> Comment{post.commentCount === 1 ? '' : 's'}</p></div>
       </div>
 
       <div className="_feed_inner_timeline_reaction">
         <LikeButton targetId={post.id} kind="post" likedByMe={post.likedByMe} likeCount={post.likeCount} />
-        <button type="button" className="_feed_inner_timeline_reaction_emoji"><ReactionIcon kind="comment" /><span>Comment</span></button>
-        <button type="button" className="_feed_inner_timeline_reaction_emoji"><ReactionIcon kind="share" /><span>Share</span></button>
+        <button type="button" className="_feed_inner_timeline_reaction_emoji _feed_reaction"><ReactionIcon kind="comment" /><span>Comment</span></button>
+        <button type="button" className="_feed_inner_timeline_reaction_emoji _feed_reaction"><ReactionIcon kind="share" /><span>Share</span></button>
       </div>
 
       <CommentSection postId={post.id} commentCount={post.commentCount} />

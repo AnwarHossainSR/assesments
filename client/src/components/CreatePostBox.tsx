@@ -66,6 +66,9 @@ export default function CreatePostBox() {
             <button type="submit" disabled={create.isPending} className="_feed_inner_text_area_btn_link"><span>{create.isPending ? 'Posting…' : 'Post'}</span></button>
           </div>
         </div>
+        <div className="_feed_inner_text_area_bottom_mobile">
+          <div className="_feed_inner_text_mobile"><div className="_feed_inner_text_area_item"><div className="_feed_inner_text_area_bottom_photo _feed_common"><button type="button" className="_feed_inner_text_area_bottom_photo_link" onClick={() => fileRef.current?.click()}><span className="_feed_inner_text_area_bottom_photo_iamge _mar_img"><ComposerIcon kind="photo" /></span>Photo</button></div></div><div className="_feed_inner_text_area_btn"><select aria-label="Post visibility" className="_feed_visibility_select" value={visibility} onChange={(event) => setVisibility(event.target.value as 'PUBLIC' | 'PRIVATE')}><option value="PUBLIC">Public</option><option value="PRIVATE">Private</option></select><button type="submit" disabled={create.isPending} className="_feed_inner_text_area_btn_link"><span>{create.isPending ? 'Posting…' : 'Post'}</span></button></div></div>
+        </div>
       </form>
     </div>
   );

@@ -43,7 +43,7 @@ export default function FeedHeader() {
           <div className="_logo_wrap">
             <a className="navbar-brand" href="/feed"><img src="/assets/images/logo.svg" alt="BuddyScript" className="_nav_logo" /></a>
           </div>
-          <div className="collapse navbar-collapse show" id="feedNavigation">
+          <div className="collapse navbar-collapse" id="feedNavigation">
             <div className="_header_form ms-auto">
               <form className="_header_form_grp" onSubmit={(event) => event.preventDefault()}>
                 <svg className="_header_form_svg" xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="none" viewBox="0 0 17 17" aria-hidden="true"><circle cx="7" cy="7" r="6" stroke="#666" /><path stroke="#666" strokeLinecap="round" d="m16 16-3-3" /></svg>
@@ -59,7 +59,7 @@ export default function FeedHeader() {
             <div className="_header_nav_profile">
               <div className="_header_nav_profile_image">{user && <Avatar user={user} className="_nav_profile_img" />}</div>
               <div className="_header_nav_dropdown"><p className="_header_nav_para">{name}</p><button className="_header_nav_dropdown_btn" type="button" aria-label="Profile menu" aria-expanded={profileOpen} onClick={() => setProfileOpen((open) => !open)}><svg xmlns="http://www.w3.org/2000/svg" width="10" height="6" fill="none" viewBox="0 0 10 6"><path fill="#112032" d="m5 5 4-4-.7-.7L5 3.6 1.7.3 1 1l4 4Z" /></svg></button></div>
-              {profileOpen && <div className="_nav_profile_dropdown _profile_dropdown"><button type="button" className="_nav_dropdown_link" onClick={() => logout()}>Log Out</button></div>}
+              {profileOpen && <div className="_nav_profile_dropdown _profile_dropdown show"><button type="button" className="_nav_dropdown_link" onClick={() => logout()}>Log Out</button></div>}
             </div>
           </div>
         </div>
