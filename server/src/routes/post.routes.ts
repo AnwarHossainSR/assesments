@@ -5,6 +5,7 @@ import { requireAuth } from '../middleware/requireAuth.js';
 import { uploadImage } from '../lib/storage.js';
 import { createPost, getFeed, deletePost } from '../services/post.service.js';
 import { likePost, unlikePost, listPostLikers } from '../services/postLike.service.js';
+import { createComment, listComments } from '../services/comment.service.js';
 
 export const postRoutes = Router();
 
@@ -47,5 +48,21 @@ postRoutes.get('/:id/likes', requireAuth, async (req, res, next) => {
   try {
     const { cursor, limit } = z.object({ cursor: z.string().optional(), limit: z.coerce.number().optional() }).parse(req.query);
     res.json(await listPostLikers({ postId: req.params.id as string, cursor, limit }));
+  } catch (err) { next(err); }
+});
+
+const commentBodySchema = z.object({ text: z.string().min(1).max(5000), parentId: z.string().uuid().optional() });
+
+postRoutes.post('/:id/comments', requireAuth, async (req, res, next) => {
+  try {
+    const { text, parentId } = commentBodySchema.parse(req.body);
+    res.status(201).json({ comment: await createComment({ postId: req.params.id as string, authorId: req.userId, text, parentId }) });
+  } catch (err) { next(err); }
+});
+
+postRoutes.get('/:id/comments', requireAuth, async (req, res, next) => {
+  try {
+    const { cursor, limit } = z.object({ cursor: z.string().optional(), limit: z.coerce.number().optional() }).parse(req.query);
+    res.json(await listComments({ postId: req.params.id as string, userId: req.userId, cursor, limit }));
   } catch (err) { next(err); }
 });
