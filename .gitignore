@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+*.log
+*.tsbuildinfo
+.bun-cache/
+.vite/
+.DS_Store
+
+# local-only working files, not for GitHub
+.claude/
+.codex/
+docs/
