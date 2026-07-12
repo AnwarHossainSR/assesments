@@ -58,3 +58,14 @@ export const listComments = (p: { postId: string; userId: string; cursor?: strin
   page({ postId: p.postId, parentId: null }, p.userId, p.cursor, p.limit);
 export const listReplies = (p: { commentId: string; userId: string; cursor?: string; limit?: number }) =>
   page({ parentId: p.commentId }, p.userId, p.cursor, p.limit);
+
+export async function deleteComment(params: { commentId: string; userId: string }): Promise<void> {
+  const comment = await prisma.comment.findUnique({ where: { id: params.commentId } });
+  if (!comment) throw new ApiError(404, 'Comment not found');
+  if (comment.authorId !== params.userId) throw new ApiError(403, 'Not your comment');
+  await prisma.$transaction(async (tx) => {
+    await tx.comment.delete({ where: { id: params.commentId } });
+    if (comment.parentId) await tx.comment.update({ where: { id: comment.parentId }, data: { replyCount: { decrement: 1 } } });
+    else await tx.post.update({ where: { id: comment.postId }, data: { commentCount: { decrement: 1 } } });
+  });
+}
