@@ -10,4 +10,5 @@ dist/
 # local-only working files, not for GitHub
 .claude/
 .codex/
+.worktrees/
 docs/

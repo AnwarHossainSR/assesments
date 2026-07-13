@@ -8,6 +8,9 @@
     "build": "tsc",
     "start": "bun ./dist/index.js",
     "typecheck": "tsc --noEmit",
+    "test:db:up": "docker compose -f ../docker-compose.yml up -d db-test",
+    "test:db:migrate": "bun --env-file=.env.test.example prisma migrate deploy",
+    "test": "bun --env-file=.env.test.example test",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "db:seed": "bun prisma/seed.ts"
@@ -17,6 +20,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.10.0",
@@ -26,6 +30,7 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.2.0",
+    "pg": "^8.22.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -36,6 +41,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.2.0",
     "@types/node": "^26.1.1",
+    "@types/pg": "^8.20.0",
     "prisma": "^7.8.0",
     "typescript": "^7.0.2"
   }
