@@ -12,3 +12,4 @@ dist/
 .codex/
 .worktrees/
 docs/
+REQUIREMENTS_AUDIT.md
