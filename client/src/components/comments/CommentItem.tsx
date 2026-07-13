@@ -10,8 +10,8 @@ export default function CommentItem({ comment }: { comment: CommentDTO }) {
   const isTopLevel = comment.parentId === null;
   const [showReply, setShowReply] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
-  const replies = useReplies(comment.id, showReplies && isTopLevel);
-  const replyItems = replies.data?.pages.flatMap((p) => p.items) ?? [];
+  const { data, isError, hasNextPage, fetchNextPage, isFetchingNextPage } = useReplies(comment.id, showReplies && isTopLevel);
+  const replyItems = data?.pages.flatMap((page) => page.items) ?? [];
 
   return (
     <div className="_comment_main _mar_b16">
@@ -39,6 +39,12 @@ export default function CommentItem({ comment }: { comment: CommentDTO }) {
           </button>
         )}
         {showReplies && replyItems.map((r) => <CommentItem key={r.id} comment={r} />)}
+        {showReplies && isError && <p role="alert">Could not load replies.</p>}
+        {showReplies && hasNextPage && (
+          <button type="button" className="_previous_comment_txt" disabled={isFetchingNextPage} onClick={() => fetchNextPage()}>
+            {isFetchingNextPage ? 'Loading...' : 'Load more replies'}
+          </button>
+        )}
       </div>
     </div>
   );
