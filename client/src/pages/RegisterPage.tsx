@@ -41,7 +41,7 @@ export default function RegisterPage() {
                 <div className="_social_registration_right_logo _mar_b28"><img src="/assets/images/logo.svg" alt="BuddyScript" className="_right_logo" /></div>
                 <p className="_social_registration_content_para _mar_b8">Get Started Now</p>
                 <h4 className="_social_registration_content_title _titl4 _mar_b50">Registration</h4>
-                <button type="button" className="_social_registration_content_btn _mar_b40">
+                <button type="button" className="_social_registration_content_btn _mar_b40" disabled aria-disabled="true" title="Google sign-in is not included in this assessment">
                   <img src="/assets/images/google.svg" alt="" className="_google_img" /> <span>Register with google</span>
                 </button>
                 <div className="_social_registration_content_bottom_txt _mar_b40"><span>Or</span></div>
