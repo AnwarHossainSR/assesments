@@ -2,6 +2,7 @@ import type { Post, User, Visibility } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import { ApiError } from '../lib/errors.js';
 import { toPublicUser } from './auth.service.js';
+import { requireVisiblePost, visiblePostWhere } from './visibility.js';
 import type { Page, PostDTO } from '../types.js';
 
 export function toPostDTO(post: Post & { author: User }, likedByMe: boolean): PostDTO {
@@ -26,7 +27,7 @@ const clampLimit = (n?: number) => (!n || n < 1 ? DEFAULT_LIMIT : Math.min(n, MA
 export async function getFeed(params: { userId: string; cursor?: string; limit?: number }): Promise<Page<PostDTO>> {
   const take = clampLimit(params.limit);
   const posts = await prisma.post.findMany({
-    where: { OR: [{ visibility: 'PUBLIC' }, { authorId: params.userId }] },
+    where: visiblePostWhere(params.userId),
     include: { author: true },
     orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
     take: take + 1,
@@ -41,8 +42,7 @@ export async function getFeed(params: { userId: string; cursor?: string; limit?:
 }
 
 export async function deletePost(params: { postId: string; userId: string }): Promise<void> {
-  const post = await prisma.post.findUnique({ where: { id: params.postId } });
-  if (!post) throw new ApiError(404, 'Post not found');
+  const post = await requireVisiblePost(params.postId, params.userId);
   if (post.authorId !== params.userId) throw new ApiError(403, 'Not your post');
   await prisma.post.delete({ where: { id: params.postId } });
 }

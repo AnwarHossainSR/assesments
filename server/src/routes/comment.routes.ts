@@ -27,6 +27,6 @@ commentRoutes.delete('/:id/like', requireAuth, async (req, res, next) => {
 commentRoutes.get('/:id/likes', requireAuth, async (req, res, next) => {
   try {
     const { cursor, limit } = z.object({ cursor: z.string().optional(), limit: z.coerce.number().optional() }).parse(req.query);
-    res.json(await listCommentLikers({ commentId: req.params.id as string, cursor, limit }));
+    res.json(await listCommentLikers({ commentId: req.params.id as string, userId: req.userId, cursor, limit }));
   } catch (err) { next(err); }
 });

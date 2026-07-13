@@ -1,12 +1,11 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
-import { ApiError } from '../lib/errors.js';
 import { toPublicUser } from './auth.service.js';
+import { requireVisibleComment } from './visibility.js';
 import type { Page, PublicUser } from '../types.js';
 
 export async function likeComment(params: { commentId: string; userId: string }): Promise<{ liked: true; likeCount: number }> {
-  const comment = await prisma.comment.findUnique({ where: { id: params.commentId }, select: { id: true } });
-  if (!comment) throw new ApiError(404, 'Comment not found');
+  await requireVisibleComment(params.commentId, params.userId);
   const likeCount = await prisma.$transaction(async (tx) => {
     try { await tx.commentLike.create({ data: { commentId: params.commentId, userId: params.userId } }); }
     catch (e) {
@@ -20,6 +19,7 @@ export async function likeComment(params: { commentId: string; userId: string })
 }
 
 export async function unlikeComment(params: { commentId: string; userId: string }): Promise<{ liked: false; likeCount: number }> {
+  await requireVisibleComment(params.commentId, params.userId);
   const likeCount = await prisma.$transaction(async (tx) => {
     const deleted = await tx.commentLike.deleteMany({ where: { commentId: params.commentId, userId: params.userId } });
     if (deleted.count === 0) return (await tx.comment.findUnique({ where: { id: params.commentId }, select: { likeCount: true } }))?.likeCount ?? 0;
@@ -28,7 +28,8 @@ export async function unlikeComment(params: { commentId: string; userId: string 
   return { liked: false, likeCount };
 }
 
-export async function listCommentLikers(params: { commentId: string; cursor?: string; limit?: number }): Promise<Page<PublicUser>> {
+export async function listCommentLikers(params: { commentId: string; userId: string; cursor?: string; limit?: number }): Promise<Page<PublicUser>> {
+  await requireVisibleComment(params.commentId, params.userId);
   const take = Math.min(params.limit && params.limit > 0 ? params.limit : 20, 50);
   const likes = await prisma.commentLike.findMany({
     where: { commentId: params.commentId }, include: { user: true },

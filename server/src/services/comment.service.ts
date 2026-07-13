@@ -3,6 +3,7 @@ import type { Comment, User } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import { ApiError } from '../lib/errors.js';
 import { toPublicUser } from './auth.service.js';
+import { requireVisibleComment, requireVisiblePost, visiblePostWhere } from './visibility.js';
 import type { CommentDTO, Page } from '../types.js';
 
 export function toCommentDTO(c: Comment & { author: User }, likedByMe: boolean): CommentDTO {
@@ -15,12 +16,11 @@ export function toCommentDTO(c: Comment & { author: User }, likedByMe: boolean):
 export async function createComment(input: { postId: string; authorId: string; text: string; parentId?: string | null }): Promise<CommentDTO> {
   const text = input.text.trim();
   if (!text) throw new ApiError(400, 'Comment cannot be empty');
-  const post = await prisma.post.findUnique({ where: { id: input.postId }, select: { id: true } });
-  if (!post) throw new ApiError(404, 'Post not found');
+  await requireVisiblePost(input.postId, input.authorId);
 
   if (input.parentId) {
-    const parent = await prisma.comment.findUnique({ where: { id: input.parentId }, select: { id: true, postId: true, parentId: true } });
-    if (!parent || parent.postId !== input.postId) throw new ApiError(400, 'Invalid parent comment');
+    const parent = await requireVisibleComment(input.parentId, input.authorId);
+    if (parent.postId !== input.postId) throw new ApiError(400, 'Invalid parent comment');
     if (parent.parentId) throw new ApiError(400, 'Replies cannot be nested further');
   }
 
@@ -54,14 +54,18 @@ async function page(where: Prisma.CommentWhereInput, userId: string, cursor?: st
   return { items: slice.map((c) => toCommentDTO(c, liked.has(c.id))), nextCursor: hasMore ? slice[slice.length - 1].id : null };
 }
 
-export const listComments = (p: { postId: string; userId: string; cursor?: string; limit?: number }) =>
-  page({ postId: p.postId, parentId: null }, p.userId, p.cursor, p.limit);
-export const listReplies = (p: { commentId: string; userId: string; cursor?: string; limit?: number }) =>
-  page({ parentId: p.commentId }, p.userId, p.cursor, p.limit);
+export async function listComments(p: { postId: string; userId: string; cursor?: string; limit?: number }): Promise<Page<CommentDTO>> {
+  await requireVisiblePost(p.postId, p.userId);
+  return page({ postId: p.postId, parentId: null, post: { is: visiblePostWhere(p.userId) } }, p.userId, p.cursor, p.limit);
+}
+
+export async function listReplies(p: { commentId: string; userId: string; cursor?: string; limit?: number }): Promise<Page<CommentDTO>> {
+  await requireVisibleComment(p.commentId, p.userId);
+  return page({ parentId: p.commentId, post: { is: visiblePostWhere(p.userId) } }, p.userId, p.cursor, p.limit);
+}
 
 export async function deleteComment(params: { commentId: string; userId: string }): Promise<void> {
-  const comment = await prisma.comment.findUnique({ where: { id: params.commentId } });
-  if (!comment) throw new ApiError(404, 'Comment not found');
+  const comment = await requireVisibleComment(params.commentId, params.userId);
   if (comment.authorId !== params.userId) throw new ApiError(403, 'Not your comment');
   await prisma.$transaction(async (tx) => {
     await tx.comment.delete({ where: { id: params.commentId } });
