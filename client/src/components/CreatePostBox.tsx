@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { useCreatePost } from '../api/posts';
 import { useAuth } from '../context/AuthContext';
+import { errorMessage } from '../lib/api';
 import Avatar from './Avatar';
 
 function ComposerIcon({ kind }: { kind: 'photo' | 'video' | 'event' | 'article' }) {
@@ -21,6 +22,7 @@ export default function CreatePostBox() {
   const [visibility, setVisibility] = useState<'PUBLIC' | 'PRIVATE'>('PUBLIC');
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
 
@@ -33,11 +35,17 @@ export default function CreatePostBox() {
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
     if (!text.trim() && !image) return;
+    setError(null);
     const data = new FormData();
     if (text.trim()) data.append('text', text.trim());
     data.append('visibility', visibility);
     if (image) data.append('image', image);
-    await create.mutateAsync(data);
+    try {
+      await create.mutateAsync(data);
+    } catch (caught) {
+      setError(errorMessage(caught));
+      return;
+    }
     setText('');
     setImage(null);
     setPreview(null);
@@ -52,6 +60,7 @@ export default function CreatePostBox() {
           <div className="_feed_inner_text_area_box_form"><textarea className="form-control _textarea" placeholder="Write something ..." aria-label="Write something" value={text} onChange={(event) => setText(event.target.value)} /></div>
         </div>
         {preview && <div className="_feed_post_preview _mar_t16"><img src={preview} alt="Selected post" /></div>}
+        {error && <p role="alert" className="_mar_t8" style={{ color: '#d00' }}>{error}</p>}
         <div className="_feed_inner_text_area_bottom">
           <div className="_feed_inner_text_area_item">
             <div className="_feed_inner_text_area_bottom_photo _feed_common">

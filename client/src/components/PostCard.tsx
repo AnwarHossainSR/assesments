@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useDeletePost } from '../api/posts';
-import { type PostDTO } from '../lib/api';
+import { errorMessage, type PostDTO } from '../lib/api';
 import Avatar from './Avatar';
 import TimeAgo from './TimeAgo';
 import LikeButton from './LikeButton';
@@ -29,6 +29,7 @@ export default function PostCard({ post }: { post: PostDTO }) {
           </div>
           {isAuthor && <div className="_feed_inner_timeline_post_box_dropdown"><button type="button" className="_feed_timeline_post_dropdown_link" aria-label="Post options" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}><svg xmlns="http://www.w3.org/2000/svg" width="4" height="17" fill="none" viewBox="0 0 4 17"><circle cx="2" cy="2" r="2" fill="#C4C4C4" /><circle cx="2" cy="8" r="2" fill="#C4C4C4" /><circle cx="2" cy="15" r="2" fill="#C4C4C4" /></svg></button>{menuOpen && <div className="_feed_timeline_dropdown show"><button type="button" className="_feed_timeline_dropdown_link" disabled={remove.isPending} onClick={() => remove.mutate(post.id)}>Delete</button></div>}</div>}
         </div>
+        {remove.isError && <p role="alert" style={{ color: '#d00' }}>{errorMessage(remove.error)}</p>}
         {post.text && <h4 className="_feed_inner_timeline_post_title">{post.text}</h4>}
         {post.imageUrl && <div className="_feed_inner_timeline_image"><img src={post.imageUrl} alt="Post attachment" className="_time_img" /></div>}
       </div>
