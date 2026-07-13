@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import { toPublicUser } from './auth.service.js';
 import { requireVisiblePost } from './visibility.js';
@@ -7,12 +6,12 @@ import type { Page, PublicUser } from '../types.js';
 export async function likePost(params: { postId: string; userId: string }): Promise<{ liked: true; likeCount: number }> {
   await requireVisiblePost(params.postId, params.userId);
   const likeCount = await prisma.$transaction(async (tx) => {
-    try { await tx.postLike.create({ data: { postId: params.postId, userId: params.userId } }); }
-    catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002')
-        return (await tx.post.findUniqueOrThrow({ where: { id: params.postId }, select: { likeCount: true } })).likeCount;
-      throw e;
-    }
+    const inserted = await tx.postLike.createMany({
+      data: [{ postId: params.postId, userId: params.userId }],
+      skipDuplicates: true,
+    });
+    if (inserted.count === 0)
+      return (await tx.post.findUniqueOrThrow({ where: { id: params.postId }, select: { likeCount: true } })).likeCount;
     return (await tx.post.update({ where: { id: params.postId }, data: { likeCount: { increment: 1 } }, select: { likeCount: true } })).likeCount;
   });
   return { liked: true, likeCount };

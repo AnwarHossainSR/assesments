@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import { toPublicUser } from './auth.service.js';
 import { requireVisibleComment } from './visibility.js';
@@ -7,12 +6,12 @@ import type { Page, PublicUser } from '../types.js';
 export async function likeComment(params: { commentId: string; userId: string }): Promise<{ liked: true; likeCount: number }> {
   await requireVisibleComment(params.commentId, params.userId);
   const likeCount = await prisma.$transaction(async (tx) => {
-    try { await tx.commentLike.create({ data: { commentId: params.commentId, userId: params.userId } }); }
-    catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002')
-        return (await tx.comment.findUniqueOrThrow({ where: { id: params.commentId }, select: { likeCount: true } })).likeCount;
-      throw e;
-    }
+    const inserted = await tx.commentLike.createMany({
+      data: [{ commentId: params.commentId, userId: params.userId }],
+      skipDuplicates: true,
+    });
+    if (inserted.count === 0)
+      return (await tx.comment.findUniqueOrThrow({ where: { id: params.commentId }, select: { likeCount: true } })).likeCount;
     return (await tx.comment.update({ where: { id: params.commentId }, data: { likeCount: { increment: 1 } }, select: { likeCount: true } })).likeCount;
   });
   return { liked: true, likeCount };
