@@ -8,6 +8,9 @@
     "build": "tsc",
     "start": "bun ./dist/index.js",
     "typecheck": "tsc --noEmit",
+    "test:db:up": "docker compose -f ../docker-compose.yml up -d db-test",
+    "test:db:migrate": "bun --env-file=.env.test.example prisma migrate deploy",
+    "test": "bun --env-file=.env.test.example test",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "db:seed": "bun prisma/seed.ts"
