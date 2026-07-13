@@ -24,7 +24,7 @@ export default function FeedLeftSidebar() {
           <ul className="_left_inner_area_explore_list">
             {explore.map(([label, isNew], index) => (
               <li className={`_left_inner_area_explore_item${isNew ? ' _explore_item' : ''}`} key={label}>
-                <a href={`#${label.toLowerCase().replace(' ', '-')}`} className="_left_inner_area_explore_link"><ExploreIcon index={index} />{label}</a>
+                <span className="_left_inner_area_explore_link" aria-disabled="true"><ExploreIcon index={index} />{label}</span>
                 {isNew && <span className="_left_inner_area_explore_link_txt">New</span>}
               </li>
             ))}
@@ -36,15 +36,15 @@ export default function FeedLeftSidebar() {
         <div className="_left_inner_area_suggest _padd_t24 _padd_b6 _padd_r24 _padd_l24 _b_radious6 _feed_inner_area">
           <div className="_left_inner_area_suggest_content _mar_b24">
             <h4 className="_left_inner_area_suggest_content_title _title5">Suggested People</h4>
-            <span className="_left_inner_area_suggest_content_txt"><a className="_left_inner_area_suggest_content_txt_link" href="#suggested">See All</a></span>
+            <span className="_left_inner_area_suggest_content_txt"><span className="_left_inner_area_suggest_content_txt_link" aria-disabled="true">See All</span></span>
           </div>
           {suggested.map((person) => (
             <div className="_left_inner_area_suggest_info" key={person.name}>
               <div className="_left_inner_area_suggest_info_box">
-                <div className="_left_inner_area_suggest_info_image"><a href="#profile"><img src={`/assets/images/${person.image}`} alt={person.name} className={person.imageClass} /></a></div>
-                <div className="_left_inner_area_suggest_info_txt"><a href="#profile"><h4 className="_left_inner_area_suggest_info_title">{person.name}</h4></a><p className="_left_inner_area_suggest_info_para">{person.role}</p></div>
+                <div className="_left_inner_area_suggest_info_image"><span aria-disabled="true"><img src={`/assets/images/${person.image}`} alt={person.name} className={person.imageClass} /></span></div>
+                <div className="_left_inner_area_suggest_info_txt"><h4 className="_left_inner_area_suggest_info_title" aria-disabled="true">{person.name}</h4><p className="_left_inner_area_suggest_info_para">{person.role}</p></div>
               </div>
-              <div className="_left_inner_area_suggest_info_link"><button type="button" className="_info_link">Connect</button></div>
+              <div className="_left_inner_area_suggest_info_link"><button type="button" className="_info_link" disabled aria-disabled="true" title="Not included in this assessment">Connect</button></div>
             </div>
           ))}
         </div>
@@ -52,12 +52,12 @@ export default function FeedLeftSidebar() {
 
       <div className="_layout_left_sidebar_inner">
         <div className="_left_inner_area_event _padd_t24 _padd_b6 _padd_r24 _padd_l24 _b_radious6 _feed_inner_area">
-          <div className="_left_inner_event_content"><h4 className="_left_inner_event_title _title5">Events</h4><a href="#events" className="_left_inner_event_link">See all</a></div>
+          <div className="_left_inner_event_content"><h4 className="_left_inner_event_title _title5">Events</h4><span className="_left_inner_event_link" aria-disabled="true">See all</span></div>
           <div className="_left_inner_event_card">
             <div className="_left_inner_event_card_iamge"><img src="/assets/images/feed_event1.png" alt="Event" className="_card_img" /></div>
             <div className="_left_inner_event_card_content"><div className="_left_inner_card_date"><p className="_left_inner_card_date_para">10</p><p className="_left_inner_card_date_para1">Jul</p></div><div className="_left_inner_card_txt"><h4 className="_left_inner_event_card_title">No more terrorism no more cry</h4></div></div>
             <hr className="_underline" />
-            <div className="_left_inner_event_bottom"><p className="_left_iner_event_bottom">17 People Going</p><button type="button" className="_left_iner_event_bottom_link">Going</button></div>
+            <div className="_left_inner_event_bottom"><p className="_left_iner_event_bottom">17 People Going</p><button type="button" className="_left_iner_event_bottom_link" disabled aria-disabled="true" title="Not included in this assessment">Going</button></div>
           </div>
         </div>
       </div>

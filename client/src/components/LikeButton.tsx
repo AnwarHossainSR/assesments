@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { likesApi, type LikeKind } from '../api/likes';
+import { errorMessage } from '../lib/api';
 import LikersModal from './LikersModal';
 
 function LikeIcon() {
@@ -13,6 +14,7 @@ export default function LikeButton({ targetId, kind, likedByMe, likeCount }: { t
   const [count, setCount] = useState(likeCount);
   const [showLikers, setShowLikers] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => { setLiked(likedByMe); setCount(likeCount); }, [likedByMe, likeCount]);
 
@@ -21,6 +23,7 @@ export default function LikeButton({ targetId, kind, likedByMe, likeCount }: { t
     const previousLiked = liked;
     const previousCount = count;
     const next = !liked;
+    setError(null);
     setBusy(true);
     setLiked(next);
     setCount((current) => current + (next ? 1 : -1));
@@ -30,9 +33,10 @@ export default function LikeButton({ targetId, kind, likedByMe, likeCount }: { t
       setCount(result.likeCount);
       queryClient.invalidateQueries({ queryKey: ['likers', kind, targetId] });
       if (kind === 'post') queryClient.invalidateQueries({ queryKey: ['feed'] });
-    } catch {
+    } catch (caught) {
       setLiked(previousLiked);
       setCount(previousCount);
+      setError(errorMessage(caught));
     } finally {
       setBusy(false);
     }
@@ -44,6 +48,7 @@ export default function LikeButton({ targetId, kind, likedByMe, likeCount }: { t
         <button type="button" className={kind === 'post' ? `_feed_inner_timeline_reaction_emoji _feed_reaction${liked ? ' _feed_reaction_active' : ''}` : '_comment_reply_link'} onClick={toggle} aria-pressed={liked} disabled={busy}>{kind === 'post' && <LikeIcon />}<span>{liked ? 'Liked' : 'Like'}</span></button>
         {kind === 'comment' && <button type="button" className="_comment_like_count" onClick={() => setShowLikers(true)}>{count > 0 ? count : ''}<span className="visually-hidden"> {count === 1 ? 'like' : 'likes'}; show people</span></button>}
       </div>
+      {error && <span role="alert" style={{ color: '#d00' }}>{error}</span>}
       {kind === 'comment' && <LikersModal kind={kind} targetId={targetId} open={showLikers} onClose={() => setShowLikers(false)} />}
     </>
   );

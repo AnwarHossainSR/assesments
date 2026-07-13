@@ -2,7 +2,8 @@ import { Router } from 'express';
 import multer from 'multer';
 import { z } from 'zod';
 import { requireAuth } from '../middleware/requireAuth.js';
-import { uploadImage } from '../lib/storage.js';
+import { ApiError } from '../lib/errors.js';
+import { isSupportedImage, uploadImage } from '../lib/storage.js';
 import { createPost, getFeed, deletePost } from '../services/post.service.js';
 import { likePost, unlikePost, listPostLikers } from '../services/postLike.service.js';
 import { createComment, listComments } from '../services/comment.service.js';
@@ -21,7 +22,10 @@ postRoutes.post('/', requireAuth, upload.single('image'), async (req, res, next)
   try {
     const { text, visibility } = createSchema.parse(req.body);
     let imageUrl: string | null = null;
-    if (req.file) imageUrl = await uploadImage(req.file.buffer, req.file.originalname);
+    if (req.file) {
+      if (!isSupportedImage(req.file.buffer)) throw new ApiError(400, 'Unsupported image');
+      imageUrl = await uploadImage(req.file.buffer, req.file.originalname);
+    }
     res.status(201).json({ post: await createPost({ authorId: req.userId, text, imageUrl, visibility }) });
   } catch (err) { next(err); }
 });

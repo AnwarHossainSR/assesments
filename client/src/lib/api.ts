@@ -6,6 +6,7 @@ export type CommentDTO = { id: string; postId: string; parentId: string | null; 
 export type Page<T> = { items: T[]; nextCursor: string | null };
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
+export const AUTH_UNAUTHORIZED_EVENT = 'auth:unauthorized';
 
 export class ApiError extends Error {
   status: number;
@@ -16,6 +17,10 @@ export class ApiError extends Error {
   }
 }
 
+export function errorMessage(error: unknown): string {
+  return error instanceof ApiError ? error.message : 'Something went wrong. Please try again.';
+}
+
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_BASE}/api${path}`, {
     credentials: 'include',
@@ -24,6 +29,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   });
   const isJson = res.headers.get('content-type')?.includes('application/json');
   const data = isJson ? await res.json() : null;
+  if (res.status === 401) window.dispatchEvent(new Event(AUTH_UNAUTHORIZED_EVENT));
   if (!res.ok) throw new ApiError(res.status, data?.error ?? res.statusText);
   return data as T;
 }

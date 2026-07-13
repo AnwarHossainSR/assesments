@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useDeletePost } from '../api/posts';
-import { type PostDTO } from '../lib/api';
+import { errorMessage, type PostDTO } from '../lib/api';
 import Avatar from './Avatar';
 import TimeAgo from './TimeAgo';
 import LikeButton from './LikeButton';
@@ -16,6 +16,7 @@ function ReactionIcon({ kind }: { kind: 'comment' | 'share' }) {
 export default function PostCard({ post }: { post: PostDTO }) {
   const { user } = useAuth();
   const remove = useDeletePost();
+  const commentArea = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const isAuthor = user?.id === post.author.id;
 
@@ -29,6 +30,7 @@ export default function PostCard({ post }: { post: PostDTO }) {
           </div>
           {isAuthor && <div className="_feed_inner_timeline_post_box_dropdown"><button type="button" className="_feed_timeline_post_dropdown_link" aria-label="Post options" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}><svg xmlns="http://www.w3.org/2000/svg" width="4" height="17" fill="none" viewBox="0 0 4 17"><circle cx="2" cy="2" r="2" fill="#C4C4C4" /><circle cx="2" cy="8" r="2" fill="#C4C4C4" /><circle cx="2" cy="15" r="2" fill="#C4C4C4" /></svg></button>{menuOpen && <div className="_feed_timeline_dropdown show"><button type="button" className="_feed_timeline_dropdown_link" disabled={remove.isPending} onClick={() => remove.mutate(post.id)}>Delete</button></div>}</div>}
         </div>
+        {remove.isError && <p role="alert" style={{ color: '#d00' }}>{errorMessage(remove.error)}</p>}
         {post.text && <h4 className="_feed_inner_timeline_post_title">{post.text}</h4>}
         {post.imageUrl && <div className="_feed_inner_timeline_image"><img src={post.imageUrl} alt="Post attachment" className="_time_img" /></div>}
       </div>
@@ -40,11 +42,11 @@ export default function PostCard({ post }: { post: PostDTO }) {
 
       <div className="_feed_inner_timeline_reaction">
         <LikeButton targetId={post.id} kind="post" likedByMe={post.likedByMe} likeCount={post.likeCount} />
-        <button type="button" className="_feed_inner_timeline_reaction_emoji _feed_reaction"><ReactionIcon kind="comment" /><span>Comment</span></button>
-        <button type="button" className="_feed_inner_timeline_reaction_emoji _feed_reaction"><ReactionIcon kind="share" /><span>Share</span></button>
+        <button type="button" className="_feed_inner_timeline_reaction_emoji _feed_reaction" onClick={() => commentArea.current?.querySelector('textarea')?.focus()}><ReactionIcon kind="comment" /><span>Comment</span></button>
+        <button type="button" className="_feed_inner_timeline_reaction_emoji _feed_reaction" disabled aria-disabled="true" title="Sharing is not included in this assessment"><ReactionIcon kind="share" /><span>Share</span></button>
       </div>
 
-      <CommentSection postId={post.id} commentCount={post.commentCount} />
+      <div ref={commentArea}><CommentSection postId={post.id} commentCount={post.commentCount} /></div>
     </div>
   );
 }
