@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { authApi, type RegisterInput } from '../api/auth';
-import { type PublicUser } from '../lib/api';
+import { type SelfUser } from '../lib/api';
 
 type AuthValue = {
-  user: PublicUser | null; loading: boolean;
+  user: SelfUser | null; loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (input: RegisterInput) => Promise<void>;
   logout: () => Promise<void>;
@@ -12,7 +12,7 @@ type AuthValue = {
 const AuthContext = createContext<AuthValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<PublicUser | null>(null);
+  const [user, setUser] = useState<SelfUser | null>(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => { authApi.me().then((r) => setUser(r.user)).catch(() => setUser(null)).finally(() => setLoading(false)); }, []);
   const login = async (email: string, password: string) => { setUser((await authApi.login(email, password)).user); };

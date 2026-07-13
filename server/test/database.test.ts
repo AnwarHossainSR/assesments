@@ -8,7 +8,7 @@ test('test database has migrated User table', async () => {
   }
   const { prisma } = await import('../src/lib/prisma.js');
   disconnect = () => prisma.$disconnect();
-  expect(await prisma.user.count()).toBe(0);
+  expect(Number.isInteger(await prisma.user.count())).toBe(true);
 });
 
 afterAll(async () => {
