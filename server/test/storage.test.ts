@@ -11,7 +11,7 @@ afterAll(() => prisma.$disconnect());
 const baseEnv = {
   NODE_ENV: 'test',
   PORT: '4001',
-  CLIENT_ORIGIN: 'http://localhost:5173',
+  CLIENT_ORIGIN: 'http://localhost:3000',
   DATABASE_URL: 'postgresql://example',
   JWT_SECRET: 'test-only-secret-at-least-32-characters',
 };
