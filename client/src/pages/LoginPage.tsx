@@ -37,7 +37,7 @@ export default function LoginPage() {
                 <div className="_social_login_left_logo _mar_b28"><img src="/assets/images/logo.svg" alt="BuddyScript" className="_left_logo" /></div>
                 <p className="_social_login_content_para _mar_b8">Welcome back</p>
                 <h4 className="_social_login_content_title _titl4 _mar_b50">Login to your account</h4>
-                <button type="button" className="_social_login_content_btn _mar_b40">
+                <button type="button" className="_social_login_content_btn _mar_b40" disabled aria-disabled="true" title="Google sign-in is not included in this assessment">
                   <img src="/assets/images/google.svg" alt="" className="_google_img" /> <span>Or sign-in with google</span>
                 </button>
                 <div className="_social_login_content_bottom_txt _mar_b40"><span>Or</span></div>
@@ -66,7 +66,7 @@ export default function LoginPage() {
                     </div>
                     <div className="col-lg-6 col-xl-6 col-md-6 col-sm-12">
                       <div className="_social_login_form_left">
-                        <p className="_social_login_form_left_para">Forgot password?</p>
+                        <p className="_social_login_form_left_para" aria-disabled="true">Forgot password? (Unavailable)</p>
                       </div>
                     </div>
                   </div>

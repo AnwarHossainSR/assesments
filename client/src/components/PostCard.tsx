@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useDeletePost } from '../api/posts';
 import { errorMessage, type PostDTO } from '../lib/api';
@@ -16,6 +16,7 @@ function ReactionIcon({ kind }: { kind: 'comment' | 'share' }) {
 export default function PostCard({ post }: { post: PostDTO }) {
   const { user } = useAuth();
   const remove = useDeletePost();
+  const commentArea = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const isAuthor = user?.id === post.author.id;
 
@@ -41,11 +42,11 @@ export default function PostCard({ post }: { post: PostDTO }) {
 
       <div className="_feed_inner_timeline_reaction">
         <LikeButton targetId={post.id} kind="post" likedByMe={post.likedByMe} likeCount={post.likeCount} />
-        <button type="button" className="_feed_inner_timeline_reaction_emoji _feed_reaction"><ReactionIcon kind="comment" /><span>Comment</span></button>
-        <button type="button" className="_feed_inner_timeline_reaction_emoji _feed_reaction"><ReactionIcon kind="share" /><span>Share</span></button>
+        <button type="button" className="_feed_inner_timeline_reaction_emoji _feed_reaction" onClick={() => commentArea.current?.querySelector('textarea')?.focus()}><ReactionIcon kind="comment" /><span>Comment</span></button>
+        <button type="button" className="_feed_inner_timeline_reaction_emoji _feed_reaction" disabled aria-disabled="true" title="Sharing is not included in this assessment"><ReactionIcon kind="share" /><span>Share</span></button>
       </div>
 
-      <CommentSection postId={post.id} commentCount={post.commentCount} />
+      <div ref={commentArea}><CommentSection postId={post.id} commentCount={post.commentCount} /></div>
     </div>
   );
 }

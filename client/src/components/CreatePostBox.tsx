@@ -67,7 +67,7 @@ export default function CreatePostBox() {
               <button type="button" className="_feed_inner_text_area_bottom_photo_link" onClick={() => fileRef.current?.click()}><span className="_feed_inner_text_area_bottom_photo_iamge _mar_img"><ComposerIcon kind="photo" /></span>Photo</button>
               <input ref={fileRef} type="file" accept="image/*" hidden onChange={onPick} aria-label="Add photo" />
             </div>
-            {(['video', 'event', 'article'] as const).map((kind) => <div className={`_feed_inner_text_area_bottom_${kind} _feed_common`} key={kind}><button type="button" className="_feed_inner_text_area_bottom_photo_link"><span className="_feed_inner_text_area_bottom_photo_iamge _mar_img"><ComposerIcon kind={kind} /></span>{kind[0].toUpperCase() + kind.slice(1)}</button></div>)}
+            {(['video', 'event', 'article'] as const).map((kind) => <div className={`_feed_inner_text_area_bottom_${kind} _feed_common`} key={kind}><button type="button" className="_feed_inner_text_area_bottom_photo_link" disabled aria-disabled="true" title="Not included in this assessment"><span className="_feed_inner_text_area_bottom_photo_iamge _mar_img"><ComposerIcon kind={kind} /></span>{kind[0].toUpperCase() + kind.slice(1)}</button></div>)}
           </div>
           <div className="_feed_inner_text_area_btn">
             <label className="visually-hidden" htmlFor="post-visibility">Post visibility</label>
