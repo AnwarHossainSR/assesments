@@ -17,6 +17,10 @@ export class ApiError extends Error {
   }
 }
 
+export function errorMessage(error: unknown): string {
+  return error instanceof ApiError ? error.message : 'Something went wrong. Please try again.';
+}
+
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_BASE}/api${path}`, {
     credentials: 'include',
