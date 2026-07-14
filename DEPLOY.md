@@ -84,6 +84,12 @@ sudo systemctl reload nginx
 ```
 
 Oracle security list / NSG must allow inbound TCP `80`.
+Ubuntu firewall must allow TCP `80` too:
+
+```bash
+sudo ufw allow 80/tcp || true
+sudo iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+```
 
 Check:
 
