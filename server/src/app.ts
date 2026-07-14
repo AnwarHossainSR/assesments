@@ -10,6 +10,7 @@ import { commentRoutes } from './routes/comment.routes.js';
 
 export function createApp() {
   const app = express();
+  app.set('trust proxy', 1);
   app.use(securityHeaders);
   app.use(trustedOrigin);
   app.use(cors({ origin: env.CLIENT_ORIGIN, credentials: true }));
