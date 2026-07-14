@@ -3,7 +3,7 @@
 Target:
 
 - Public IP: `161.118.230.251`
-- App path: `/var/www/buddyscript`
+- App path: `/var/www/assesments`
 - Frontend: Nginx static files
 - Backend: PM2 + Bun on `127.0.0.1:4000`
 - Database: repo `docker-compose.yml` Postgres
@@ -28,8 +28,8 @@ Log out and back in so Docker group applies.
 ```bash
 sudo mkdir -p /var/www
 sudo chown "$USER":"$USER" /var/www
-git clone <REPO_URL> /var/www/buddyscript
-cd /var/www/buddyscript
+git clone <REPO_URL> /var/www/assesments
+cd /var/www/assesments
 git checkout dpeloyment
 bun install
 docker compose up -d db
@@ -44,15 +44,15 @@ CLIENT_ORIGIN=http://161.118.230.251
 DATABASE_URL=postgresql://buddy:buddy@localhost:5433/buddyscript?schema=public
 JWT_SECRET=replace-with-at-least-32-random-characters
 COOKIE_SECURE=false
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
+CLOUDINARY_CLOUD_NAME=zqrnrwtq
+CLOUDINARY_API_KEY=856623161773669
+CLOUDINARY_API_SECRET=N2BVm8j7qn_lsFl-cmus3FCPDe8
 ```
 
 Build and migrate:
 
 ```bash
-cd /var/www/buddyscript
+cd /var/www/assesments
 bun --filter client build
 cd server
 bun prisma generate
