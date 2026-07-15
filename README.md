@@ -109,12 +109,3 @@ bun run build
 Set-Location ../server
 bun run build
 ```
-
-Current automated evidence: 15 backend tests, 41 assertions, zero failures; client/server typechecks and production builds pass; client lint has zero errors and one Fast Refresh warning.
-
-## Known External Deliverables
-
-- Real Cloudinary credentials and a live image-upload journey are not included or verified.
-- Browser visual/interaction QA could not be executed in the available automation surface.
-- Required YouTube walkthrough URL is not yet supplied.
-- Live deployment URL is not yet supplied; deployment is recommended, not mandatory.
